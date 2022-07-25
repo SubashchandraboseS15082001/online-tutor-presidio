@@ -1,0 +1,13 @@
+.homeContainer {
+  background: #edeceb;
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+.homeHeader {
+  background: white;
+  height: 7vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

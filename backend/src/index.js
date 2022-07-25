@@ -7,8 +7,8 @@ import Notification from "./model/Notification.js";
 
 const PORT = process.env.PORT || 9000;
 
-const SUCCESS = 0;
-const FAILURE = 1;
+const FAILURE = 0;
+const SUCCESS = 1;
 const STUDENT = "student";
 const TUTOR = "tutor";
 
@@ -22,6 +22,8 @@ mongoose
   )
   .then(() => {
     //STUDENT
+
+    app.get("/", (req, res) => res.send("I'm alive"));
 
     app.post("/signin", async (req, res) => {
       const { email, password, type } = req.body;
@@ -78,7 +80,7 @@ mongoose
       }
 
       if (type == TUTOR) {
-        const { location, subjects } = req.body;
+        const { location, subject } = req.body;
         const existingTutor = await Tutor.findOne({ email }).exec();
         if (existingTutor) {
           res.send({ message: "Tutor already exists", status: FAILURE });
@@ -89,7 +91,7 @@ mongoose
           name,
           email,
           password,
-          subjects,
+          subject,
           location,
           notification: [],
         });
@@ -103,30 +105,30 @@ mongoose
     });
 
     app.get("/search", async (req, res) => {
-      const { location, subject, name } = req.query;
+      const { q, by } = req.query;
 
       const tutors = [];
-      if (name) {
+      if (by === "name") {
         const res = await Tutor.find({
-          name: name,
+          name: q,
         })
           .select("-notification")
           .exec();
         tutors.push(...res);
       }
 
-      if (subject) {
+      if (by === "subject") {
         const res = await Tutor.find({
-          subjects: subject,
+          subject: q,
         })
           .select(["-notification", "-password"])
           .exec();
         tutors.push(...res);
       }
 
-      if (location) {
+      if (by === "location") {
         const res = await Tutor.find({
-          location: location,
+          location: q,
         })
           .select(["-notification", "-password"])
           .exec();
